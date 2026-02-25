@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Music Jeopardy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/game.css">
+</head>
+<body>
+  <div class="sparkle-overlay" aria-hidden="true"></div>
+
+  <header class="top-bar">
+    <div class="title-wrap">
+      <h1>Birthday Music Jeopardy</h1>
+      <p class="subtitle">Classy TV Board Edition</p>
+    </div>
+    <div class="top-bar-actions">
+      <button id="openSettingsBtn" class="ghost-btn">Settings</button>
+      <button id="resetGameBtn" class="danger-btn">Reset Game</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="scoreboard card">
+      <article class="team-card" id="teamAcard">
+        <h2 id="teamANameLabel">Team A</h2>
+        <p class="score-value" id="teamAScore">0</p>
+      </article>
+      <div class="picking-team card-soft">
+        <p>Picking Team</p>
+        <div class="picker-actions">
+          <button id="pickerTeamA" class="pick-btn active" data-team="A">Team A</button>
+          <button id="pickerTeamB" class="pick-btn" data-team="B">Team B</button>
+        </div>
+      </div>
+      <article class="team-card" id="teamBcard">
+        <h2 id="teamBNameLabel">Team B</h2>
+        <p class="score-value" id="teamBScore">0</p>
+      </article>
+    </section>
+
+    <section class="board card">
+      <div id="boardGrid" class="board-grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <aside id="settingsDrawer" class="settings-drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <h2>Game Settings</h2>
+      <button id="closeSettingsBtn" class="ghost-btn">Close</button>
+    </div>
+    <form id="settingsForm" class="settings-form">
+      <label>
+        Team A Name
+        <input id="teamANameInput" type="text" maxlength="24">
+      </label>
+      <label>
+        Team B Name
+        <input id="teamBNameInput" type="text" maxlength="24">
+      </label>
+      <label>
+        Points by Level (comma-separated)
+        <input id="pointsMapInput" type="text" placeholder="100,200,300,400,500">
+      </label>
+      <label class="toggle-row">
+        <input id="allowStealsToggle" type="checkbox">
+        Allow steals
+      </label>
+      <label class="toggle-row">
+        <input id="negativeScoringToggle" type="checkbox">
+        Negative scoring on wrong pick
+      </label>
+      <label class="toggle-row">
+        <input id="showSongMetaToggle" type="checkbox">
+        Show song title and artist on question card
+      </label>
+      <div class="form-actions">
+        <button type="submit" class="primary-btn">Save Settings</button>
+      </div>
+    </form>
+  </aside>
+
+  <div id="questionModal" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>Round Card</h2>
+        <button id="closeQuestionBtn" class="ghost-btn">Close</button>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-item">
+          <p class="meta-label">Category</p>
+          <p id="modalCategory" class="meta-value">-</p>
+        </div>
+        <div class="meta-item">
+          <p class="meta-label">Level</p>
+          <p id="modalLevel" class="meta-value">-</p>
+        </div>
+        <div class="meta-item">
+          <p class="meta-label">Points</p>
+          <p id="modalPoints" class="meta-value">-</p>
+        </div>
+        <div class="meta-item">
+          <p class="meta-label">Picking Team</p>
+          <p id="modalPickingTeam" class="meta-value">-</p>
+        </div>
+      </div>
+
+      <div id="songMetaWrap" class="song-meta hidden">
+        <p id="modalSongTitle" class="song-title"></p>
+        <p id="modalArtist" class="song-artist"></p>
+      </div>
+
+      <div class="host-note-wrap">
+        <p class="meta-label">Host Note</p>
+        <p id="modalHostNote">-</p>
+      </div>
+
+      <div class="answer-reveal">
+        <button id="toggleAnswerBtn" class="ghost-btn">Reveal Target Word</button>
+        <p id="modalTargetWord" class="target-word hidden">-</p>
+      </div>
+
+      <div class="modal-actions">
+        <button id="teamACorrectBtn" class="primary-btn">Team A Correct</button>
+        <button id="teamBCorrectBtn" class="primary-btn">Team B Correct</button>
+        <button id="wrongPickBtn" class="ghost-btn">Wrong Pick</button>
+        <button id="noOneBtn" class="ghost-btn">No One</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/game.js" defer></script>
+</body>
+</html>

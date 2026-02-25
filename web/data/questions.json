@@ -1,0 +1,254 @@
+{
+  "categories": [
+    {
+      "name": "Clothing Item",
+      "questions": [
+        {
+          "id": "clothing-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Thrift Shop",
+          "artist": "Macklemore & Ryan Lewis",
+          "targetWord": "fur coat",
+          "hostNote": "Start near opening verse."
+        },
+        {
+          "id": "clothing-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "Blue Suede Shoes",
+          "artist": "Elvis Presley",
+          "targetWord": "blue suede shoes",
+          "hostNote": "Play chorus for easy recognition."
+        },
+        {
+          "id": "clothing-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "Raspberry Beret",
+          "artist": "Prince",
+          "targetWord": "beret",
+          "hostNote": "Use hook section."
+        },
+        {
+          "id": "clothing-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "Diamonds on the Soles of Her Shoes",
+          "artist": "Paul Simon",
+          "targetWord": "shoes",
+          "hostNote": "Play a shorter segment."
+        },
+        {
+          "id": "clothing-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "Pumped Up Kicks",
+          "artist": "Foster the People",
+          "targetWord": "kicks",
+          "hostNote": "Start right before title lyric."
+        }
+      ]
+    },
+    {
+      "name": "Animal",
+      "questions": [
+        {
+          "id": "animal-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Eye of the Tiger",
+          "artist": "Survivor",
+          "targetWord": "tiger",
+          "hostNote": "Quick intro works well."
+        },
+        {
+          "id": "animal-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "The Lion Sleeps Tonight",
+          "artist": "The Tokens",
+          "targetWord": "lion",
+          "hostNote": "Use the famous refrain."
+        },
+        {
+          "id": "animal-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "Dog Days Are Over",
+          "artist": "Florence + The Machine",
+          "targetWord": "dog",
+          "hostNote": "Play from chorus entry."
+        },
+        {
+          "id": "animal-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "Roar",
+          "artist": "Katy Perry",
+          "targetWord": "lion",
+          "hostNote": "Prompt can be singular animal name."
+        },
+        {
+          "id": "animal-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "Rock Lobster",
+          "artist": "The B-52's",
+          "targetWord": "lobster",
+          "hostNote": "Use short clip near title callout."
+        }
+      ]
+    },
+    {
+      "name": "Food",
+      "questions": [
+        {
+          "id": "food-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Sugar",
+          "artist": "Maroon 5",
+          "targetWord": "sugar",
+          "hostNote": "Start near chorus."
+        },
+        {
+          "id": "food-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "Cake by the Ocean",
+          "artist": "DNCE",
+          "targetWord": "cake",
+          "hostNote": "Use clean version if needed."
+        },
+        {
+          "id": "food-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "Banana Pancakes",
+          "artist": "Jack Johnson",
+          "targetWord": "banana pancakes",
+          "hostNote": "Slower tempo, give extra second."
+        },
+        {
+          "id": "food-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "Peaches",
+          "artist": "Justin Bieber",
+          "targetWord": "peaches",
+          "hostNote": "Play chorus only."
+        },
+        {
+          "id": "food-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "Strawberry Fields Forever",
+          "artist": "The Beatles",
+          "targetWord": "strawberry",
+          "hostNote": "Classic track, short clue window."
+        }
+      ]
+    },
+    {
+      "name": "Drinks",
+      "questions": [
+        {
+          "id": "drinks-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Red Red Wine",
+          "artist": "UB40",
+          "targetWord": "wine",
+          "hostNote": "Open with title line."
+        },
+        {
+          "id": "drinks-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "Escape (The Pina Colada Song)",
+          "artist": "Rupert Holmes",
+          "targetWord": "pina colada",
+          "hostNote": "Pronunciation variants accepted."
+        },
+        {
+          "id": "drinks-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "One Margarita",
+          "artist": "Luke Bryan",
+          "targetWord": "margarita",
+          "hostNote": "Keep clip short."
+        },
+        {
+          "id": "drinks-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "Gin and Juice",
+          "artist": "Snoop Dogg",
+          "targetWord": "gin and juice",
+          "hostNote": "Use clean version."
+        },
+        {
+          "id": "drinks-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "One Bourbon, One Scotch, One Beer",
+          "artist": "George Thorogood",
+          "targetWord": "bourbon",
+          "hostNote": "Accept bourbon, scotch, or beer."
+        }
+      ]
+    },
+    {
+      "name": "Body Parts",
+      "questions": [
+        {
+          "id": "body-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Head, Shoulders, Knees and Toes",
+          "artist": "Traditional",
+          "targetWord": "head",
+          "hostNote": "For this tile, any listed body part can count."
+        },
+        {
+          "id": "body-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "Achy Breaky Heart",
+          "artist": "Billy Ray Cyrus",
+          "targetWord": "heart",
+          "hostNote": "Use chorus."
+        },
+        {
+          "id": "body-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "Eyes Without a Face",
+          "artist": "Billy Idol",
+          "targetWord": "face",
+          "hostNote": "Play recognizable hook."
+        },
+        {
+          "id": "body-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "My Humps",
+          "artist": "Black Eyed Peas",
+          "targetWord": "humps",
+          "hostNote": "Use clean version for party setting."
+        },
+        {
+          "id": "body-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "Poker Face",
+          "artist": "Lady Gaga",
+          "targetWord": "face",
+          "hostNote": "Hard mode: start late in chorus."
+        }
+      ]
+    }
+  ]
+}

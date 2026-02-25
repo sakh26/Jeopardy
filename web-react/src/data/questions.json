@@ -1,0 +1,254 @@
+{
+  "categories": [
+    {
+      "name": "Klaerplagg",
+      "questions": [
+        {
+          "id": "clothing-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Thrift Shop",
+          "artist": "Macklemore & Ryan Lewis",
+          "targetWord": "fur coat",
+          "hostNote": "Start naer starten av verset."
+        },
+        {
+          "id": "clothing-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "Blue Suede Shoes",
+          "artist": "Elvis Presley",
+          "targetWord": "blue suede shoes",
+          "hostNote": "Spill refrenget for enkel gjenkjenning."
+        },
+        {
+          "id": "clothing-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "Raspberry Beret",
+          "artist": "Prince",
+          "targetWord": "beret",
+          "hostNote": "Bruk hook-delen."
+        },
+        {
+          "id": "clothing-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "Diamonds on the Soles of Her Shoes",
+          "artist": "Paul Simon",
+          "targetWord": "shoes",
+          "hostNote": "Spill et kortere utdrag."
+        },
+        {
+          "id": "clothing-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "Pumped Up Kicks",
+          "artist": "Foster the People",
+          "targetWord": "kicks",
+          "hostNote": "Start rett foer tittel-linjen."
+        }
+      ]
+    },
+    {
+      "name": "Dyr",
+      "questions": [
+        {
+          "id": "animal-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Eye of the Tiger",
+          "artist": "Survivor",
+          "targetWord": "tiger",
+          "hostNote": "Kort intro fungerer bra."
+        },
+        {
+          "id": "animal-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "The Lion Sleeps Tonight",
+          "artist": "The Tokens",
+          "targetWord": "lion",
+          "hostNote": "Bruk det kjente refrenget."
+        },
+        {
+          "id": "animal-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "Dog Days Are Over",
+          "artist": "Florence + The Machine",
+          "targetWord": "dog",
+          "hostNote": "Spill fra starten av refrenget."
+        },
+        {
+          "id": "animal-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "Roar",
+          "artist": "Katy Perry",
+          "targetWord": "lion",
+          "hostNote": "Godta dyrenavn i entall."
+        },
+        {
+          "id": "animal-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "Rock Lobster",
+          "artist": "The B-52's",
+          "targetWord": "lobster",
+          "hostNote": "Bruk kort klipp naer tittelropet."
+        }
+      ]
+    },
+    {
+      "name": "Mat",
+      "questions": [
+        {
+          "id": "food-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Sugar",
+          "artist": "Maroon 5",
+          "targetWord": "sugar",
+          "hostNote": "Start naer refrenget."
+        },
+        {
+          "id": "food-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "Cake by the Ocean",
+          "artist": "DNCE",
+          "targetWord": "cake",
+          "hostNote": "Bruk clean-versjon ved behov."
+        },
+        {
+          "id": "food-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "Banana Pancakes",
+          "artist": "Jack Johnson",
+          "targetWord": "banana pancakes",
+          "hostNote": "Roligere tempo, gi et ekstra sekund."
+        },
+        {
+          "id": "food-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "Peaches",
+          "artist": "Justin Bieber",
+          "targetWord": "peaches",
+          "hostNote": "Spill kun refrenget."
+        },
+        {
+          "id": "food-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "Strawberry Fields Forever",
+          "artist": "The Beatles",
+          "targetWord": "strawberry",
+          "hostNote": "Klassisk laet, kort hintvindu."
+        }
+      ]
+    },
+    {
+      "name": "Drikke",
+      "questions": [
+        {
+          "id": "drinks-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Red Red Wine",
+          "artist": "UB40",
+          "targetWord": "wine",
+          "hostNote": "Start med tittel-linjen."
+        },
+        {
+          "id": "drinks-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "Escape (The Pina Colada Song)",
+          "artist": "Rupert Holmes",
+          "targetWord": "pina colada",
+          "hostNote": "Godta ulike uttaler."
+        },
+        {
+          "id": "drinks-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "One Margarita",
+          "artist": "Luke Bryan",
+          "targetWord": "margarita",
+          "hostNote": "Hold klippet kort."
+        },
+        {
+          "id": "drinks-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "Gin and Juice",
+          "artist": "Snoop Dogg",
+          "targetWord": "gin and juice",
+          "hostNote": "Bruk clean-versjon."
+        },
+        {
+          "id": "drinks-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "One Bourbon, One Scotch, One Beer",
+          "artist": "George Thorogood",
+          "targetWord": "bourbon",
+          "hostNote": "Godta bourbon, scotch eller beer."
+        }
+      ]
+    },
+    {
+      "name": "Kroppsdeler",
+      "questions": [
+        {
+          "id": "body-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Head, Shoulders, Knees and Toes",
+          "artist": "Traditional",
+          "targetWord": "head",
+          "hostNote": "Her kan alle nevnte kroppsdeler godkjennes."
+        },
+        {
+          "id": "body-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "Achy Breaky Heart",
+          "artist": "Billy Ray Cyrus",
+          "targetWord": "heart",
+          "hostNote": "Bruk refrenget."
+        },
+        {
+          "id": "body-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "Eyes Without a Face",
+          "artist": "Billy Idol",
+          "targetWord": "face",
+          "hostNote": "Spill en gjenkjennelig hook."
+        },
+        {
+          "id": "body-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "My Humps",
+          "artist": "Black Eyed Peas",
+          "targetWord": "humps",
+          "hostNote": "Bruk clean-versjon for selskap."
+        },
+        {
+          "id": "body-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "Poker Face",
+          "artist": "Lady Gaga",
+          "targetWord": "face",
+          "hostNote": "Vanskelig: start sent i refrenget."
+        }
+      ]
+    }
+  ]
+}

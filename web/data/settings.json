@@ -1,0 +1,8 @@
+{
+  "teamAName": "Team A",
+  "teamBName": "Team B",
+  "pointsByLevel": [100, 200, 300, 400, 500],
+  "allowSteals": true,
+  "negativeScoring": false,
+  "showSongMeta": false
+}

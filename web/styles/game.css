@@ -1,0 +1,412 @@
+:root {
+  --bg-a: #111521;
+  --bg-b: #1a2231;
+  --card: #1f2838;
+  --card-soft: #253045;
+  --ink: #f3f2ef;
+  --ink-soft: #c8c6c1;
+  --accent: #cfb47a;
+  --accent-strong: #e5c88d;
+  --danger: #8d3f46;
+  --danger-strong: #aa505a;
+  --used: #3b4454;
+  --shadow: rgba(4, 7, 14, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: Inter, system-ui, sans-serif;
+  background: radial-gradient(circle at 10% 10%, #232f44 0%, var(--bg-a) 50%, #0c101a 100%);
+  position: relative;
+}
+
+.sparkle-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.11;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.55) 0.3px, transparent 0.8px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 0.2px, transparent 0.7px);
+  background-size: 22px 22px, 28px 28px;
+  background-position: 0 0, 9px 14px;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem 2rem;
+}
+
+.title-wrap h1 {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.subtitle {
+  margin: 0.1rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.top-bar-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.app-shell {
+  padding: 0.3rem 2rem 2rem;
+  display: grid;
+  gap: 1.1rem;
+}
+
+.card,
+.card-soft,
+.settings-drawer,
+.modal-card {
+  border: 1px solid rgba(231, 217, 185, 0.18);
+  box-shadow: 0 10px 35px var(--shadow);
+}
+
+.card {
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(30, 39, 56, 0.95), rgba(23, 31, 45, 0.95));
+}
+
+.card-soft {
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(39, 49, 70, 0.9), rgba(33, 43, 63, 0.9));
+}
+
+.scoreboard {
+  padding: 0.9rem;
+  display: grid;
+  grid-template-columns: 1fr minmax(180px, 280px) 1fr;
+  gap: 0.9rem;
+}
+
+.team-card {
+  background: var(--card-soft);
+  border-radius: 14px;
+  border: 1px solid rgba(231, 217, 185, 0.12);
+  padding: 0.8rem 1rem;
+}
+
+.team-card h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.7rem);
+  font-weight: 700;
+}
+
+.score-value {
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.4rem, 3.8vw, 2.35rem);
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+
+.picking-team {
+  display: grid;
+  place-items: center;
+  padding: 0.8rem;
+}
+
+.picking-team p {
+  margin: 0 0 0.55rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.picker-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.board {
+  padding: 1rem;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(130px, 1fr));
+  gap: 0.7rem;
+}
+
+.category-header {
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-size: 0.77rem;
+  color: var(--accent-strong);
+  border-radius: 12px;
+  border: 1px solid rgba(231, 217, 185, 0.22);
+  background: linear-gradient(180deg, rgba(56, 64, 82, 0.9), rgba(38, 45, 60, 0.9));
+}
+
+.tile-btn {
+  min-height: 84px;
+  border: 1px solid rgba(231, 217, 185, 0.22);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(44, 54, 75, 0.95), rgba(34, 42, 59, 0.95));
+  color: var(--ink);
+  font-size: 1.35rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+}
+
+.tile-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(231, 217, 185, 0.48);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.26);
+}
+
+.tile-btn.used {
+  background: linear-gradient(145deg, rgba(54, 61, 76, 0.75), rgba(48, 54, 68, 0.75));
+  color: rgba(243, 242, 239, 0.42);
+  cursor: not-allowed;
+  border-color: rgba(231, 217, 185, 0.08);
+  opacity: 0.75;
+}
+
+button {
+  border: none;
+  color: var(--ink);
+  font-family: Inter, system-ui, sans-serif;
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+
+.primary-btn {
+  background: linear-gradient(180deg, #bfa063, #a88a54);
+  color: #191a1d;
+  font-weight: 700;
+}
+
+.danger-btn {
+  background: linear-gradient(180deg, var(--danger-strong), var(--danger));
+  color: #fff;
+  font-weight: 600;
+}
+
+.ghost-btn,
+.pick-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(231, 217, 185, 0.22);
+}
+
+.pick-btn.active {
+  border-color: rgba(231, 217, 185, 0.72);
+  background: rgba(207, 180, 122, 0.2);
+}
+
+.settings-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(390px, 95vw);
+  background: linear-gradient(180deg, rgba(29, 38, 55, 0.98), rgba(24, 31, 44, 0.98));
+  transform: translateX(100%);
+  transition: transform 180ms ease;
+  z-index: 10;
+  padding: 1rem;
+}
+
+.settings-drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.drawer-header h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+}
+
+.settings-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.settings-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+input[type="text"] {
+  border: 1px solid rgba(231, 217, 185, 0.26);
+  border-radius: 9px;
+  padding: 0.5rem 0.6rem;
+  background: rgba(13, 18, 28, 0.6);
+  color: var(--ink);
+}
+
+.toggle-row {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.form-actions {
+  margin-top: 0.35rem;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 10, 16, 0.73);
+  display: grid;
+  place-items: center;
+  z-index: 11;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: min(900px, 94vw);
+  background: linear-gradient(165deg, rgba(30, 39, 55, 0.98), rgba(22, 30, 42, 0.98));
+  border-radius: 16px;
+  padding: 1rem;
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.5rem;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 0.65rem;
+}
+
+.meta-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(231, 217, 185, 0.18);
+  border-radius: 10px;
+  padding: 0.55rem;
+}
+
+.meta-label {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.meta-value {
+  margin: 0.25rem 0 0;
+  font-weight: 700;
+}
+
+.song-meta {
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(231, 217, 185, 0.16);
+}
+
+.song-meta.hidden {
+  display: none;
+}
+
+.song-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.song-artist {
+  margin: 0.2rem 0 0;
+  color: var(--ink-soft);
+}
+
+.host-note-wrap {
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(231, 217, 185, 0.16);
+}
+
+.host-note-wrap p {
+  margin: 0;
+}
+
+#modalHostNote {
+  margin-top: 0.25rem;
+}
+
+.answer-reveal {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.target-word {
+  margin: 0;
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  background: rgba(207, 180, 122, 0.22);
+  border: 1px solid rgba(231, 217, 185, 0.35);
+  font-weight: 700;
+}
+
+.target-word.hidden {
+  display: none;
+}
+
+.modal-actions {
+  margin-top: 0.95rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(130px, 1fr));
+  gap: 0.6rem;
+}
+
+@media (max-width: 1050px) {
+  .board-grid {
+    grid-template-columns: repeat(5, minmax(90px, 1fr));
+  }
+
+  .tile-btn {
+    min-height: 72px;
+    font-size: 1.15rem;
+  }
+
+  .scoreboard {
+    grid-template-columns: 1fr;
+  }
+}
