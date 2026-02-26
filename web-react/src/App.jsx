@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./index.css";
 import questionsData from "./data/questions.json";
 import defaultSettings from "./data/settings.json";
@@ -12,6 +12,15 @@ const SPOTIFY_REDIRECT_URI =
 const SPOTIFY_TOKEN_KEY = "jeoparty_spotify_token";
 const SPOTIFY_VERIFIER_KEY = "jeoparty_spotify_verifier";
 const SPOTIFY_SCOPES = ["user-modify-playback-state", "user-read-playback-state"];
+const CARD_TRANSITION_MS = 950;
+const CONTENT_LEAD_MS = 480;
+const COLOR_THEMES = [
+  { value: "soft-pink", label: "Soft Pink" },
+  { value: "lavender", label: "Lavender" },
+  { value: "rose-gold", label: "Rose Gold" },
+  { value: "midnight", label: "Midnight" },
+  { value: "barbie", label: "Barbie" },
+];
 
 function sanitizeName(input, fallback) {
   const trimmed = String(input || "").trim();
@@ -59,14 +68,21 @@ function App() {
   const [answerRevealed, setAnswerRevealed] = useState(false);
   const [hintRevealed, setHintRevealed] = useState(false);
   const [songFilter, setSongFilter] = useState("");
+  const [transitionCard, setTransitionCard] = useState(null);
   const [spotifySession, setSpotifySession] = useState(null);
   const [spotifyBusy, setSpotifyBusy] = useState(false);
+  const [toast, setToast] = useState(null);
+  const openTimerRef = useRef(null);
+  const transitionEndTimerRef = useRef(null);
+  const toastTimerRef = useRef(null);
+  const modalMeasureRef = useRef(null);
   const [settingsDraft, setSettingsDraft] = useState({
     teamAName: defaultSettings.teamAName,
     teamBName: defaultSettings.teamBName,
     allowSteals: defaultSettings.allowSteals,
     negativeScoring: defaultSettings.negativeScoring,
     showSongMeta: defaultSettings.showSongMeta,
+    colorTheme: defaultSettings.colorTheme || "soft-pink",
   });
 
   const categories = useMemo(() => mapPoints(questionsData.categories), []);
@@ -92,6 +108,30 @@ function App() {
   const teamBLabel = settings.teamBName || "Lag B";
 
   useEffect(() => {
+    return () => {
+      if (openTimerRef.current) {
+        clearTimeout(openTimerRef.current);
+      }
+      if (transitionEndTimerRef.current) {
+        clearTimeout(transitionEndTimerRef.current);
+      }
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
+
+  function showToast(message, tone = "info") {
+    setToast({ message, tone });
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    toastTimerRef.current = setTimeout(() => {
+      setToast(null);
+    }, 3200);
+  }
+
+  useEffect(() => {
     if (window.location.hostname !== "localhost") {
       return;
     }
@@ -100,6 +140,22 @@ function App() {
     }${window.location.pathname}${window.location.search}${window.location.hash}`;
     window.location.replace(target);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", settings.colorTheme || "soft-pink");
+  }, [settings.colorTheme]);
+
+  useEffect(() => {
+    function onKeyDown(event) {
+      if (event.key === "Escape" && activeQuestion) {
+        closeQuestion();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [activeQuestion]);
 
   useEffect(() => {
     const cached = localStorage.getItem(SPOTIFY_TOKEN_KEY);
@@ -193,7 +249,7 @@ function App() {
 
   async function connectSpotify() {
     if (!SPOTIFY_CLIENT_ID) {
-      window.alert("Mangler Spotify Client ID. Legg inn VITE_SPOTIFY_CLIENT_ID i .env.");
+      showToast("Mangler Spotify Client ID. Legg inn VITE_SPOTIFY_CLIENT_ID i .env.", "error");
       return;
     }
     const verifier = randomString(64);
@@ -225,7 +281,7 @@ function App() {
     try {
       const accessToken = await refreshAccessTokenIfNeeded();
       if (!accessToken) {
-        window.alert("Spotify-okten er utlopet. Koble til pa nytt.");
+        showToast("Spotify-okten er utlopet. Koble til pa nytt.", "error");
         setSpotifySession(null);
         return;
       }
@@ -242,7 +298,7 @@ function App() {
       const searchData = await searchResponse.json();
       const trackUri = searchData?.tracks?.items?.[0]?.uri;
       if (!trackUri) {
-        window.alert("Fant ikke sangen i Spotify-sok.");
+        showToast("Fant ikke sangen i Spotify-sok.", "error");
         return;
       }
 
@@ -256,12 +312,14 @@ function App() {
       });
 
       if (playResponse.status === 404) {
-        window.alert("Ingen aktiv Spotify-enhet. Start Spotify pa mobilen eller PC-en forst.");
+        showToast("Ingen aktiv Spotify-enhet. Start Spotify pa mobilen eller PC-en forst.", "error");
       } else if (playResponse.status === 403) {
-        window.alert("Avspilling krever Spotify Premium-konto.");
+        showToast("Avspilling krever Spotify Premium-konto.", "error");
       } else if (playResponse.status === 401) {
-        window.alert("Spotify-tilkobling utlopte. Koble til pa nytt.");
+        showToast("Spotify-tilkobling utlopte. Koble til pa nytt.", "error");
         disconnectSpotify();
+      } else if (playResponse.ok) {
+        showToast("Spiller av sang fra Spotify.", "success");
       }
     } finally {
       setSpotifyBusy(false);
@@ -275,6 +333,7 @@ function App() {
       allowSteals: settings.allowSteals,
       negativeScoring: settings.negativeScoring,
       showSongMeta: settings.showSongMeta,
+      colorTheme: settings.colorTheme || "soft-pink",
     });
     setSongFilter("");
     setSettingsOpen(true);
@@ -293,6 +352,7 @@ function App() {
       allowSteals: settingsDraft.allowSteals,
       negativeScoring: settingsDraft.negativeScoring,
       showSongMeta: settingsDraft.showSongMeta,
+      colorTheme: settingsDraft.colorTheme,
     }));
     closeSettings();
   }
@@ -307,17 +367,57 @@ function App() {
     setAnswerRevealed(false);
   }
 
-  function openQuestion(categoryName, question) {
-    setActiveQuestion({ categoryName, question });
-    setAnswerRevealed(false);
-    setHintRevealed(false);
-    void playSpotifyForQuestion(question);
+  function openQuestion(categoryName, question, sourceElement) {
+    if (transitionCard || activeQuestion || !sourceElement) {
+      return;
+    }
+
+    const rect = sourceElement.getBoundingClientRect();
+    const measuredWidth = modalMeasureRef.current?.offsetWidth;
+    const measuredHeight = modalMeasureRef.current?.offsetHeight;
+    const toWidth = measuredWidth || Math.min(900, window.innerWidth * 0.95);
+    const toHeight = measuredHeight || Math.min(560, window.innerHeight * 0.86);
+    const toLeft = (window.innerWidth - toWidth) / 2;
+    const toTop = (window.innerHeight - toHeight) / 2;
+
+    setTransitionCard({
+      categoryName,
+      question,
+      animating: false,
+      style: {
+        "--from-left": `${rect.left}px`,
+        "--from-top": `${rect.top}px`,
+        "--from-width": `${rect.width}px`,
+        "--from-height": `${rect.height}px`,
+        "--to-left": `${toLeft}px`,
+        "--to-top": `${toTop}px`,
+        "--to-width": `${toWidth}px`,
+        "--to-height": `${toHeight}px`,
+      },
+    });
+
+    requestAnimationFrame(() => {
+      setTransitionCard((prev) => (prev ? { ...prev, animating: true } : prev));
+    });
+
+    const openDelay = Math.max(0, CARD_TRANSITION_MS - CONTENT_LEAD_MS);
+    openTimerRef.current = setTimeout(() => {
+      setActiveQuestion({ categoryName, question });
+      setAnswerRevealed(false);
+      setHintRevealed(false);
+      void playSpotifyForQuestion(question);
+    }, openDelay);
+
+    transitionEndTimerRef.current = setTimeout(() => {
+      setTransitionCard(null);
+    }, CARD_TRANSITION_MS);
   }
 
   function closeQuestion() {
     setActiveQuestion(null);
     setAnswerRevealed(false);
     setHintRevealed(false);
+    setTransitionCard(null);
   }
 
   function markQuestionUsed(questionId) {
@@ -444,9 +544,9 @@ function App() {
                       <button
                         key={question.id}
                         type="button"
-                        disabled={used}
+                        disabled={used || !!transitionCard}
                         className={`tile-btn ${used ? "used" : ""}`}
-                        onClick={() => openQuestion(category.name, question)}
+                        onClick={(event) => openQuestion(category.name, question, event.currentTarget)}
                       >
                         {question.points}
                       </button>
@@ -514,6 +614,23 @@ function App() {
             />
             Vis sangtittel og artist
           </label>
+          <label>
+            Fargetema
+            <select
+              value={settingsDraft.colorTheme}
+              onChange={(e) => {
+                const nextTheme = e.target.value;
+                setSettingsDraft((prev) => ({ ...prev, colorTheme: nextTheme }));
+                setSettings((prev) => ({ ...prev, colorTheme: nextTheme }));
+              }}
+            >
+              {COLOR_THEMES.map((theme) => (
+                <option key={theme.value} value={theme.value}>
+                  {theme.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <div className="form-actions">
             <button type="submit" className="primary-btn">
               Lagre innstillinger
@@ -550,17 +667,138 @@ function App() {
         </section>
       </aside>
 
+      {(transitionCard || activeQuestion) && (
+        <div
+          className={`modal-backdrop-layer ${transitionCard ? "transitioning" : "steady"}`}
+          aria-hidden="true"
+        />
+      )}
+
+      {transitionCard && (
+        <div className={`card-transition-layer ${transitionCard.animating ? "active" : ""}`} aria-hidden="true">
+          <div className="transition-card-shell" style={transitionCard.style}>
+            <div className="transition-card-inner">
+              <div className="transition-card-face transition-card-front">
+                <span>{transitionCard.question.points}</span>
+              </div>
+              <div className="transition-card-face transition-card-back">
+                <div className="transition-modal-clone">
+                  <div className="modal-head compact-head">
+                    <h2>{transitionCard.categoryName}</h2>
+                  </div>
+                  <div className="meta-grid">
+                    <div className="meta-item">
+                      <p className="meta-label">&nbsp;</p>
+                      <p className="meta-value">&nbsp;</p>
+                    </div>
+                    <div className="meta-item">
+                      <p className="meta-label">&nbsp;</p>
+                      <p className="meta-value">&nbsp;</p>
+                    </div>
+                    <div className="meta-item">
+                      <p className="meta-label">&nbsp;</p>
+                      <p className="meta-value">&nbsp;</p>
+                    </div>
+                    <div className="meta-item">
+                      <p className="meta-label">&nbsp;</p>
+                      <p className="meta-value">&nbsp;</p>
+                    </div>
+                  </div>
+                  {settings.showSongMeta && <div className="song-meta song-meta-placeholder" />}
+                  <div className="answer-reveal answer-reveal-placeholder">
+                    <span className="placeholder-chip" />
+                    <span className="placeholder-chip wide" />
+                  </div>
+                  <div className="modal-actions modal-actions-placeholder">
+                    <span className="placeholder-btn" />
+                    <span className="placeholder-btn" />
+                    <span className="placeholder-btn" />
+                    <span className="placeholder-btn" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="modal-size-probe-wrap" aria-hidden="true">
+        <div ref={modalMeasureRef} className="modal-card modal-size-probe">
+          <div className="modal-head compact-head">
+            <h2>Kategori</h2>
+            <button className="ghost-btn" type="button">
+              Lukk
+            </button>
+          </div>
+          <div className="meta-grid">
+            <div className="meta-item">
+              <p className="meta-label">Kategori</p>
+              <p className="meta-value">Designer</p>
+            </div>
+            <div className="meta-item">
+              <p className="meta-label">Niva</p>
+              <p className="meta-value">5</p>
+            </div>
+            <div className="meta-item">
+              <p className="meta-label">Poeng</p>
+              <p className="meta-value">5</p>
+            </div>
+            <div className="meta-item">
+              <p className="meta-label">Velgende lag</p>
+              <p className="meta-value">{teamALabel}</p>
+            </div>
+          </div>
+          {settings.showSongMeta && (
+            <div className="song-meta">
+              <p className="song-title">Eksempelsang</p>
+              <p className="song-artist">Eksempelartist</p>
+            </div>
+          )}
+          <div className="answer-reveal">
+            <button className="ghost-btn" type="button">
+              Vis hint
+            </button>
+            <button className="ghost-btn" type="button">
+              Vis riktig svar
+            </button>
+          </div>
+          <div className="modal-actions">
+            <button className="primary-btn" type="button">
+              {teamALabel} riktig
+            </button>
+            <button className="primary-btn" type="button">
+              {teamBLabel} riktig
+            </button>
+            <button className="ghost-btn" type="button">
+              Feil svar
+            </button>
+            <button className="ghost-btn" type="button">
+              Ingen
+            </button>
+          </div>
+        </div>
+      </div>
+
       {activeQuestion && (
-        <div className="modal" role="dialog" aria-modal="true">
+        <div
+          className="modal"
+          role="dialog"
+          aria-modal="true"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              closeQuestion();
+            }
+          }}
+        >
           <div className="modal-card">
-            <div className="modal-head">
-              <h2>Rundekort</h2>
+            <div className="modal-head compact-head reveal reveal-1">
+              <h2>{activeQuestion.categoryName}</h2>
               <button className="ghost-btn" onClick={closeQuestion}>
                 Lukk
               </button>
             </div>
 
-            <div className="meta-grid">
+            <div className="meta-grid reveal reveal-2">
               <div className="meta-item">
                 <p className="meta-label">Kategori</p>
                 <p className="meta-value">{activeQuestion.categoryName}</p>
@@ -580,13 +818,13 @@ function App() {
             </div>
 
             {settings.showSongMeta && (
-              <div className="song-meta">
+              <div className="song-meta reveal reveal-3">
                 <p className="song-title">{activeQuestion.question.songTitle}</p>
                 <p className="song-artist">{activeQuestion.question.artist}</p>
               </div>
             )}
 
-            <div className="answer-reveal">
+            <div className="answer-reveal reveal reveal-4">
               <button
                 className="ghost-btn"
                 onClick={() => setHintRevealed((prev) => !prev)}
@@ -605,7 +843,7 @@ function App() {
               {answerRevealed && <p className="target-word">{activeQuestion.question.targetWord}</p>}
             </div>
 
-            <div className="modal-actions">
+            <div className="modal-actions reveal reveal-5">
               <button className="primary-btn" onClick={() => awardWinner("A")}>
                 {teamALabel} riktig
               </button>
@@ -620,6 +858,12 @@ function App() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {toast && (
+        <div className={`toast toast-${toast.tone}`} role="status" aria-live="polite">
+          {toast.message}
         </div>
       )}
     </>

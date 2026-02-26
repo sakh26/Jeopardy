@@ -4,5 +4,6 @@
   "pointsByLevel": [1, 2, 3, 4, 5],
   "allowSteals": true,
   "negativeScoring": false,
-  "showSongMeta": false
+  "showSongMeta": false,
+  "colorTheme": "soft-pink"
 }
