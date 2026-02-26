@@ -1,102 +1,52 @@
 {
   "categories": [
     {
-      "name": "Klaerplagg",
-      "questions": [
-        {
-          "id": "clothing-1",
-          "level": 1,
-          "points": 100,
-          "songTitle": "Thrift Shop",
-          "artist": "Macklemore & Ryan Lewis",
-          "targetWord": "fur coat",
-          "hostNote": "Start naer starten av verset."
-        },
-        {
-          "id": "clothing-2",
-          "level": 2,
-          "points": 200,
-          "songTitle": "Blue Suede Shoes",
-          "artist": "Elvis Presley",
-          "targetWord": "blue suede shoes",
-          "hostNote": "Spill refrenget for enkel gjenkjenning."
-        },
-        {
-          "id": "clothing-3",
-          "level": 3,
-          "points": 300,
-          "songTitle": "Raspberry Beret",
-          "artist": "Prince",
-          "targetWord": "beret",
-          "hostNote": "Bruk hook-delen."
-        },
-        {
-          "id": "clothing-4",
-          "level": 4,
-          "points": 400,
-          "songTitle": "Diamonds on the Soles of Her Shoes",
-          "artist": "Paul Simon",
-          "targetWord": "shoes",
-          "hostNote": "Spill et kortere utdrag."
-        },
-        {
-          "id": "clothing-5",
-          "level": 5,
-          "points": 500,
-          "songTitle": "Pumped Up Kicks",
-          "artist": "Foster the People",
-          "targetWord": "kicks",
-          "hostNote": "Start rett foer tittel-linjen."
-        }
-      ]
-    },
-    {
       "name": "Dyr",
       "questions": [
         {
           "id": "animal-1",
           "level": 1,
           "points": 100,
-          "songTitle": "Eye of the Tiger",
-          "artist": "Survivor",
-          "targetWord": "tiger",
-          "hostNote": "Kort intro fungerer bra."
+          "songTitle": "Haien Kommer",
+          "artist": "Kudos, GOLF",
+          "targetWord": "hai",
+          "hostNote": "Hint: Sjodyr med finner."
         },
         {
           "id": "animal-2",
           "level": 2,
           "points": 200,
-          "songTitle": "The Lion Sleeps Tonight",
-          "artist": "The Tokens",
-          "targetWord": "lion",
-          "hostNote": "Bruk det kjente refrenget."
+          "songTitle": "Mockingbird",
+          "artist": "Eminem",
+          "targetWord": "mockingbird",
+          "hostNote": "Hint: Tittelen er en liten fugl."
         },
         {
           "id": "animal-3",
           "level": 3,
           "points": 300,
-          "songTitle": "Dog Days Are Over",
-          "artist": "Florence + The Machine",
-          "targetWord": "dog",
-          "hostNote": "Spill fra starten av refrenget."
+          "songTitle": "BIRDS OF A FEATHER",
+          "artist": "Billie Eilish",
+          "targetWord": "fugl",
+          "hostNote": "Hint: Tittelen handler om to av disse."
         },
         {
           "id": "animal-4",
           "level": 4,
           "points": 400,
-          "songTitle": "Roar",
-          "artist": "Katy Perry",
-          "targetWord": "lion",
-          "hostNote": "Godta dyrenavn i entall."
+          "songTitle": "Kursiv",
+          "artist": "Den BB, Erik og Kriss",
+          "targetWord": "gris",
+          "hostNote": "Hint: Et vanlig gaardsdyr."
         },
         {
           "id": "animal-5",
           "level": 5,
           "points": 500,
-          "songTitle": "Rock Lobster",
-          "artist": "The B-52's",
-          "targetWord": "lobster",
-          "hostNote": "Bruk kort klipp naer tittelropet."
+          "songTitle": "She Wolf",
+          "artist": "Shakira",
+          "targetWord": "ulv",
+          "hostNote": "Hint: Rovdyr som hyler."
         }
       ]
     },
@@ -107,46 +57,46 @@
           "id": "food-1",
           "level": 1,
           "points": 100,
-          "songTitle": "Sugar",
-          "artist": "Maroon 5",
-          "targetWord": "sugar",
-          "hostNote": "Start naer refrenget."
+          "songTitle": "Watermelon Sugar",
+          "artist": "Harry Styles",
+          "targetWord": "vannmelon",
+          "hostNote": "Hint: Sommerfrukt i tittelen."
         },
         {
           "id": "food-2",
           "level": 2,
           "points": 200,
-          "songTitle": "Cake by the Ocean",
-          "artist": "DNCE",
-          "targetWord": "cake",
-          "hostNote": "Bruk clean-versjon ved behov."
+          "songTitle": "Lollipop",
+          "artist": "MIKA",
+          "targetWord": "lollipop",
+          "hostNote": "Hint: Sotteri pa pinne."
         },
         {
           "id": "food-3",
           "level": 3,
           "points": 300,
-          "songTitle": "Banana Pancakes",
-          "artist": "Jack Johnson",
-          "targetWord": "banana pancakes",
-          "hostNote": "Roligere tempo, gi et ekstra sekund."
+          "songTitle": "Cake by the Ocean",
+          "artist": "DNCE",
+          "targetWord": "kake",
+          "hostNote": "Hint: Bakverk i tittelen."
         },
         {
           "id": "food-4",
           "level": 4,
           "points": 400,
-          "songTitle": "Peaches",
-          "artist": "Justin Bieber",
-          "targetWord": "peaches",
-          "hostNote": "Spill kun refrenget."
+          "songTitle": "American Pie",
+          "artist": "Don McLean",
+          "targetWord": "pai",
+          "hostNote": "Hint: Klassisk amerikansk bakverk."
         },
         {
           "id": "food-5",
           "level": 5,
           "points": 500,
-          "songTitle": "Strawberry Fields Forever",
-          "artist": "The Beatles",
-          "targetWord": "strawberry",
-          "hostNote": "Klassisk laet, kort hintvindu."
+          "songTitle": "edamame",
+          "artist": "Rich Brian, bbno$",
+          "targetWord": "edamame",
+          "hostNote": "Hint: Gronn belgfrukt."
         }
       ]
     },
@@ -157,46 +107,46 @@
           "id": "drinks-1",
           "level": 1,
           "points": 100,
-          "songTitle": "Red Red Wine",
-          "artist": "UB40",
-          "targetWord": "wine",
-          "hostNote": "Start med tittel-linjen."
+          "songTitle": "Ompa",
+          "artist": "Soppgirobygget",
+          "targetWord": "gin",
+          "hostNote": "Hint: Klar sprittype."
         },
         {
           "id": "drinks-2",
           "level": 2,
           "points": 200,
-          "songTitle": "Escape (The Pina Colada Song)",
-          "artist": "Rupert Holmes",
-          "targetWord": "pina colada",
-          "hostNote": "Godta ulike uttaler."
+          "songTitle": "Espresso",
+          "artist": "Sabrina Carpenter",
+          "targetWord": "espresso",
+          "hostNote": "Hint: Sterk kaffedrikk."
         },
         {
           "id": "drinks-3",
           "level": 3,
           "points": 300,
-          "songTitle": "One Margarita",
-          "artist": "Luke Bryan",
-          "targetWord": "margarita",
-          "hostNote": "Hold klippet kort."
+          "songTitle": "TEXAS HOLD 'EM",
+          "artist": "Beyonce",
+          "targetWord": "whiskey",
+          "hostNote": "Hint: Brun sprittype."
         },
         {
           "id": "drinks-4",
           "level": 4,
           "points": 400,
-          "songTitle": "Gin and Juice",
-          "artist": "Snoop Dogg",
-          "targetWord": "gin and juice",
-          "hostNote": "Bruk clean-versjon."
+          "songTitle": "Bloody Mary",
+          "artist": "Lady Gaga",
+          "targetWord": "bloody mary",
+          "hostNote": "Hint: Klassisk cocktail."
         },
         {
           "id": "drinks-5",
           "level": 5,
           "points": 500,
-          "songTitle": "One Bourbon, One Scotch, One Beer",
-          "artist": "George Thorogood",
-          "targetWord": "bourbon",
-          "hostNote": "Godta bourbon, scotch eller beer."
+          "songTitle": "Diet Pepsi",
+          "artist": "Addison Rae",
+          "targetWord": "diet pepsi/pepsi",
+          "hostNote": "Hint: Brusmerke i tittelen."
         }
       ]
     },
@@ -207,46 +157,96 @@
           "id": "body-1",
           "level": 1,
           "points": 100,
-          "songTitle": "Head, Shoulders, Knees and Toes",
-          "artist": "Traditional",
-          "targetWord": "head",
-          "hostNote": "Her kan alle nevnte kroppsdeler godkjennes."
+          "songTitle": "Turne",
+          "artist": "Bausa",
+          "targetWord": "ass/rumpe",
+          "hostNote": "Hint: Baksiden av kroppen."
         },
         {
           "id": "body-2",
           "level": 2,
           "points": 200,
-          "songTitle": "Achy Breaky Heart",
-          "artist": "Billy Ray Cyrus",
-          "targetWord": "heart",
-          "hostNote": "Bruk refrenget."
+          "songTitle": "Pretty Brown Eyes",
+          "artist": "Cody Simpson",
+          "targetWord": "oyner",
+          "hostNote": "Hint: Du ser med disse."
         },
         {
           "id": "body-3",
           "level": 3,
           "points": 300,
-          "songTitle": "Eyes Without a Face",
-          "artist": "Billy Idol",
-          "targetWord": "face",
-          "hostNote": "Spill en gjenkjennelig hook."
+          "songTitle": "Ugly Heart",
+          "artist": "GRL",
+          "targetWord": "hjerte",
+          "hostNote": "Hint: Pumper blod."
         },
         {
           "id": "body-4",
           "level": 4,
           "points": 400,
-          "songTitle": "My Humps",
-          "artist": "Black Eyed Peas",
-          "targetWord": "humps",
-          "hostNote": "Bruk clean-versjon for selskap."
+          "songTitle": "I'm Good (Blue)",
+          "artist": "David Guetta, Bebe Rexha",
+          "targetWord": "hands/hender",
+          "hostNote": "Hint: Kroppsdelene pa enden av armene."
         },
         {
           "id": "body-5",
           "level": 5,
           "points": 500,
-          "songTitle": "Poker Face",
-          "artist": "Lady Gaga",
-          "targetWord": "face",
-          "hostNote": "Vanskelig: start sent i refrenget."
+          "songTitle": "Gold Digger",
+          "artist": "Kanye West",
+          "targetWord": "underarms/underarmer",
+          "hostNote": "Hint: Mellom hand og albue."
+        }
+      ]
+    },
+    {
+      "name": "Designer",
+      "questions": [
+        {
+          "id": "clothing-1",
+          "level": 1,
+          "points": 100,
+          "songTitle": "Prada",
+          "artist": "cassO, RAYE, D-Block Europe",
+          "targetWord": "prada",
+          "hostNote": "Hint: Italiensk motehus."
+        },
+        {
+          "id": "clothing-2",
+          "level": 2,
+          "points": 200,
+          "songTitle": "Hot Girl Bummer",
+          "artist": "blackbear",
+          "targetWord": "birkin",
+          "hostNote": "Hint: Luksusveske forbundet med Hermes."
+        },
+        {
+          "id": "clothing-3",
+          "level": 3,
+          "points": 300,
+          "songTitle": "7 rings",
+          "artist": "Ariana Grande",
+          "targetWord": "tiffany's",
+          "hostNote": "Hint: Luksusjuvelmerke."
+        },
+        {
+          "id": "clothing-4",
+          "level": 4,
+          "points": 400,
+          "songTitle": "Hallo",
+          "artist": "Isah, Dutty Dior",
+          "targetWord": "dior",
+          "hostNote": "Hint: Fransk motehus."
+        },
+        {
+          "id": "clothing-5",
+          "level": 5,
+          "points": 500,
+          "songTitle": "Saint-Tropez",
+          "artist": "Post Malone",
+          "targetWord": "abercrombie fitch",
+          "hostNote": "Hint: Amerikansk motevaremerke."
         }
       ]
     }

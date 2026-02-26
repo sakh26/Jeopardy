@@ -57,6 +57,7 @@ function App() {
   const [activeQuestion, setActiveQuestion] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [answerRevealed, setAnswerRevealed] = useState(false);
+  const [hintRevealed, setHintRevealed] = useState(false);
   const [songFilter, setSongFilter] = useState("");
   const [spotifySession, setSpotifySession] = useState(null);
   const [spotifyBusy, setSpotifyBusy] = useState(false);
@@ -309,12 +310,14 @@ function App() {
   function openQuestion(categoryName, question) {
     setActiveQuestion({ categoryName, question });
     setAnswerRevealed(false);
+    setHintRevealed(false);
     void playSpotifyForQuestion(question);
   }
 
   function closeQuestion() {
     setActiveQuestion(null);
     setAnswerRevealed(false);
+    setHintRevealed(false);
   }
 
   function markQuestionUsed(questionId) {
@@ -583,14 +586,21 @@ function App() {
               </div>
             )}
 
-            <div className="host-note-wrap">
-              <p className="meta-label">Vertsnotat</p>
-              <p className="host-note">{activeQuestion.question.hostNote || "Ingen notat."}</p>
-            </div>
-
             <div className="answer-reveal">
+              <button
+                className="ghost-btn"
+                onClick={() => setHintRevealed((prev) => !prev)}
+                disabled={!activeQuestion.question.hint && !activeQuestion.question.hostNote}
+              >
+                {hintRevealed ? "Skjul hint" : "Vis hint"}
+              </button>
+              {hintRevealed && (
+                <p className="hint-text">
+                  {activeQuestion.question.hint || activeQuestion.question.hostNote || "Ingen hint tilgjengelig."}
+                </p>
+              )}
               <button className="ghost-btn" onClick={() => setAnswerRevealed((prev) => !prev)}>
-                {answerRevealed ? "Skjul malord" : "Vis malord"}
+                {answerRevealed ? "Skjul riktig svar" : "Vis riktig svar"}
               </button>
               {answerRevealed && <p className="target-word">{activeQuestion.question.targetWord}</p>}
             </div>
