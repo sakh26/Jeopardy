@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ActiveQuestion, GameLogEntry, GameSettings, QuestionPack, TeamId } from '../types';
 import { useLocalStorage } from './useLocalStorage';
 import { isPackFinished, computeProgress } from '../utils/gameLogic';
@@ -67,9 +67,11 @@ export function useGameState(
   );
 
   const packRef = useRef(pack);
-  packRef.current = pack;
   const scoresRef = useRef(scores);
-  scoresRef.current = scores;
+  useLayoutEffect(() => {
+    packRef.current = pack;
+    scoresRef.current = scores;
+  });
 
   const persist = useRef<(s: Record<TeamId, number>, ids: Set<string>, pickerIdx: number) => void>(
     (s, ids, pickerIdx) => {
@@ -198,7 +200,7 @@ export function useGameState(
       },
     ]);
     setActiveQuestion(null);
-  }, [activeQuestion, scores, currentPickerIndex, advancePicker]);
+  }, [activeQuestion, currentPickerIndex, advancePicker]);
 
   const resetGame = useCallback(() => {
     const fresh = makeInitialScores(settings.teams);
