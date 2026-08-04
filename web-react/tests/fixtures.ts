@@ -1,20 +1,6 @@
-import type { GameSettings, QuestionPack, Team } from '../src/types';
+import type { QuestionPack } from '../src/types';
 
-export const MOCK_TEAMS: Team[] = [
-  { id: 'A', name: 'Team A' },
-  { id: 'B', name: 'Team B' },
-];
-
-export const MOCK_SETTINGS: GameSettings = {
-  teams: MOCK_TEAMS,
-  pointsByLevel: [100, 200, 300, 400, 500],
-  allowSteals: true,
-  negativeScoring: false,
-  showSongMeta: false,
-  questionTimerSeconds: null,
-  colorTheme: 'soft-pink',
-};
-
+/** Two categories of five, so a test can finish a whole board quickly. */
 export const MOCK_PACK: QuestionPack = {
   id: 'test-pack',
   name: 'Test Pack',

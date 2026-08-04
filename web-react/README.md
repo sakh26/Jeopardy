@@ -44,49 +44,33 @@ npm run lint         # ESLint
 
 ---
 
-## Architecture — read this before the file tree
+## Architecture
 
-The running app is **`src/App.tsx`, a single ~770-line component**. Board rendering, scoring, the question modal, theming and the pack editor all live there. It imports only `packLoader`, `useSpotify`, `useToast`, `Toast` and the shared types.
+`App.tsx` renders the game — board, question modal, scoreboard, pack editor and theming. It is a large component, and deliberately so: it is all presentation, and none of it is what a test would want to reach.
 
-Everything else under `src/components/`, plus `useGameState`, `useSettings`, `useLocalStorage`, `useCardFlipTransition`, `utils/gameLogic`, `utils/sanitize` and the `plugins/` registry, is an **in-progress extraction of that monolith**. Those modules compile, are type-checked and are covered by the unit tests, but nothing in the running app imports them yet.
-
-Concretely: `main.tsx → App.tsx`, and the component tree imports only each other. Treat it as the target structure, not a description of what executes today.
+The rules live outside it, and that is what the unit tests exercise:
 
 ```
 src/
-  App.tsx           ← the running game (~770 lines)
+  App.tsx           the screen: board, modal, editor, themes
   main.tsx
   index.css
-  data/
-    packLoader.ts   ← in use: auto-loads packs/*.json via import.meta.glob
-    packs/          ← in use
   hooks/
-    useSpotify.ts   ← in use
-    useToast.ts     ← in use
-    useGameState.ts          ─┐
-    useSettings.ts            │
-    useLocalStorage.ts        ├─ extracted, not yet wired in
-    useCardFlipTransition.ts  │
-    useKeyboardShortcuts.ts  ─┘
-  components/
-    shared/Toast.tsx  ← in use
-    board/ modal/ scoreboard/ settings/ admin/ screens/  ← not yet wired in
-  plugins/          ← not yet wired in
+    useGameState.ts scores, turn order, spent tiles, the double-jeopardy draw
+    useSpotify.ts   OAuth 2.0 PKCE and playback
+    useToast.ts     auto-dismissing message queue
   utils/
-    spotify.ts      ← in use (PKCE helpers)
-    gameLogic.ts    ← not yet wired in
-    sanitize.ts     ← not yet wired in
+    gameLogic.ts    pickDoubleIds, tileValue, progress, finish detection
+    spotify.ts      PKCE verifier and challenge helpers
+  data/
+    packLoader.ts   auto-loads packs/*.json via import.meta.glob
+    packs/          question packs, one JSON file each
+  components/
+    shared/Toast.tsx
   types/index.ts
 ```
 
-### Remaining work to finish the refactor
-
-1. Replace the state block in `App.tsx` with `useGameState`
-2. Swap the inline board/modal/scoreboard JSX for the extracted components
-3. Route pack selection through `plugins/index.ts` instead of the inline branch
-4. Drop `canvas-confetti` or use it in place of the CSS `ConfettiLayer` — it is currently an unused dependency
-
-Features that exist in the extracted layer but **not** in the running app: steal mechanic, question timer, game resume from `localStorage`, game log, and the five-theme selector.
+`useGameState` holds one round: which team picks, which tiles are spent, what a tile is worth once the double multiplier applies, and where the points go. It takes an injectable `rng`, so a test can pin exactly which tiles are doubles rather than hope.
 
 ---
 
@@ -96,15 +80,13 @@ Features that exist in the extracted layer but **not** in the running app: steal
 npm test
 ```
 
-51 unit tests. Note that most of them cover the extracted layer described above rather than the code path the app currently executes:
+49 unit tests, every one against code the running game executes:
 
-| File | Tests | Covers code in use? |
+| File | Tests | Covers |
 |---|---|---|
-| `useGameState` | 18 | No — extracted layer |
-| `gameLogic` | 13 | No — extracted layer |
-| `sanitize` | 10 | No — extracted layer |
-| `useLocalStorage` | 6 | No — extracted layer |
-| `useToast` | 5 | Yes |
+| `useGameState` | 27 | Scoring, doubles, turn order, teams, standings, reset |
+| `gameLogic` | 17 | Double draw, tile value, progress, finish detection |
+| `useToast` | 5 | Auto-dismiss, fake timers |
 
 ---
 
@@ -138,18 +120,27 @@ You can also build packs in the browser with the built-in editor and export the 
 
 ## Spotify setup
 
-Optional, and only relevant for music packs. **The Spotify button is hidden unless a client ID is configured**, so the public demo runs without it — the host just plays the song themselves.
+Optional, and only relevant for music packs. **The Spotify button is hidden unless a client ID is configured**, so a build without one runs as a plain quiz — the host plays the song themselves.
 
 1. Create an app at [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
-2. Add redirect URI `http://127.0.0.1:5173` for local use
-3. Create `web-react/.env`:
+2. Register both redirect URIs, character for character:
+   - `http://127.0.0.1:5173/Jeoparty/` for local development
+   - `https://sakh26.github.io/Jeoparty/` for the deployed site
+3. For local use, create `web-react/.env`:
 
 ```
 VITE_SPOTIFY_CLIENT_ID=your_client_id
-VITE_SPOTIFY_REDIRECT_URI=http://127.0.0.1:5173
 ```
 
-Requires Spotify Premium and an active device. OAuth 2.0 PKCE — no client secret is stored.
+`VITE_SPOTIFY_REDIRECT_URI` is optional — when unset the app derives the URI from the current location, base path included, which is correct in both environments.
+
+For the deployed site the client ID comes from the repository variable `VITE_SPOTIFY_CLIENT_ID`, injected at build time by `pages.yml`. It is a variable rather than a secret because a PKCE client ID is public by design: it ships inside the JavaScript bundle regardless.
+
+### Who can actually connect
+
+Spotify apps begin in **development mode**, where only accounts listed under *User Management* in the dashboard may authorise — a maximum of 25, each added by the email on their Spotify account. Anyone else is refused by Spotify before reaching the app. Removing that cap means applying for extended quota, which Spotify grants to commercial products rather than personal projects.
+
+Playback itself additionally requires **Spotify Premium** and an already-active device; the free tier cannot be told what to play, and returns `403`.
 
 ---
 
