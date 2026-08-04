@@ -291,7 +291,7 @@ export default function App() {
                   + Lag
                 </button>
               )}
-              {spotify.isConnected ? (
+              {spotify.isConfigured && (spotify.isConnected ? (
                 <button
                   onClick={spotify.disconnect}
                   title="Spotify tilkoblet · trykk for å koble fra"
@@ -312,7 +312,7 @@ export default function App() {
                   </svg>
                   Koble til Spotify
                 </button>
-              )}
+              ))}
               <span style={{ width: 1, height: 22, background: 'var(--line)' }} />
               {(Object.keys(THEMES) as ThemeKey[]).map((k) => (
                 <button

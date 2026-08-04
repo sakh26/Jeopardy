@@ -184,6 +184,7 @@ export function useSpotify(showToast: (msg: string, tone?: 'info' | 'success' | 
   return {
     session,
     isBusy,
+    isConfigured: Boolean(CLIENT_ID),
     isConnected: session !== null,
     connect,
     disconnect,
