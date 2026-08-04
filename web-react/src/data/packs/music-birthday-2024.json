@@ -14,7 +14,7 @@
           "songTitle": "Haien Kommer",
           "artist": "Kudos, GOLF",
           "targetWord": "Hai",
-          "hint": "Sjodyr med finner"
+          "hint": "Sjødyr med finner"
         },
         {
           "id": "animal-2",
@@ -41,7 +41,7 @@
           "songTitle": "Kursiv",
           "artist": "Den BB, Erik og Kriss",
           "targetWord": "Gris",
-          "hint": "Et vanlig gaardsdyr"
+          "hint": "Et vanlig gårdsdyr"
         },
         {
           "id": "animal-5",
@@ -73,7 +73,7 @@
           "songTitle": "Lollipop",
           "artist": "MIKA",
           "targetWord": "Lollipop",
-          "hint": "Sotteri pa pinne"
+          "hint": "Sukkertøy på pinne"
         },
         {
           "id": "food-3",
@@ -100,7 +100,7 @@
           "songTitle": "edamame",
           "artist": "Rich Brian, bbno$",
           "targetWord": "Edamame",
-          "hint": "Gronn belgfrukt"
+          "hint": "Grønn belgfrukt"
         }
       ]
     },
@@ -130,7 +130,7 @@
           "level": 3,
           "points": 300,
           "songTitle": "TEXAS HOLD 'EM",
-          "artist": "Beyonce",
+          "artist": "Beyoncé",
           "targetWord": "Whiskey",
           "hint": "Brun sprittype"
         },
@@ -161,7 +161,7 @@
           "id": "body-1",
           "level": 1,
           "points": 100,
-          "songTitle": "Turne",
+          "songTitle": "Turné",
           "artist": "Bausa",
           "targetWord": "Rumpe",
           "hint": "Baksiden av kroppen"
@@ -172,7 +172,7 @@
           "points": 200,
           "songTitle": "Pretty Brown Eyes",
           "artist": "Cody Simpson",
-          "targetWord": "Oyner",
+          "targetWord": "Øyne",
           "hint": "Du ser med disse"
         },
         {
@@ -191,7 +191,7 @@
           "songTitle": "I'm Good (Blue)",
           "artist": "David Guetta, Bebe Rexha",
           "targetWord": "Hender",
-          "hint": "Kroppsdelene pa enden av armene"
+          "hint": "Kroppsdelene på enden av armene"
         },
         {
           "id": "body-5",
@@ -200,7 +200,7 @@
           "songTitle": "Gold Digger",
           "artist": "Kanye West",
           "targetWord": "Underarmer",
-          "hint": "Mellom hand og albue"
+          "hint": "Mellom hånd og albue"
         }
       ]
     },
@@ -223,7 +223,7 @@
           "songTitle": "Hot Girl Bummer",
           "artist": "blackbear",
           "targetWord": "Birkin",
-          "hint": "Luksusveske forbundet med Hermes"
+          "hint": "Luksusveske forbundet med Hermès"
         },
         {
           "id": "clothing-3",

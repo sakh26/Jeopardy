@@ -1,241 +1,169 @@
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import type { ActiveQuestion, GameLogEntry, GameSettings, QuestionPack, TeamId } from '../types';
-import { useLocalStorage } from './useLocalStorage';
-import { isPackFinished, computeProgress } from '../utils/gameLogic';
+import { useCallback, useMemo, useState } from 'react';
+import type { Question, QuestionPack } from '../types';
+import { isPackFinished, pickDoubleIds, tileValue } from '../utils/gameLogic';
 
-interface PersistedState {
-  packId: string;
-  packVersion: string;
-  scores: Record<string, number>;
-  usedQuestionIds: string[];
-  currentPickerIndex: number;
+export interface PlayTeam {
+  name: string;
+  score: number;
 }
 
-function makeInitialScores(teams: GameSettings['teams']): Record<TeamId, number> {
-  return Object.fromEntries(teams.map((t) => [t.id, 0])) as Record<TeamId, number>;
+/** Which tile is open, by category index and question index. */
+export interface TileRef {
+  ci: number;
+  qi: number;
 }
 
-interface UseGameStateResult {
-  scores: Record<TeamId, number>;
-  usedQuestionIds: Set<string>;
-  currentPickerIndex: number;
-  activeQuestion: ActiveQuestion | null;
-  gameLog: GameLogEntry[];
-  isFinished: boolean;
-  progressPercent: number;
-  hasSavedGame: boolean;
-  setCurrentPickerIndex: (i: number) => void;
-  openQuestion: (active: ActiveQuestion) => void;
-  closeQuestion: () => void;
-  awardWinner: (teamId: TeamId) => void;
-  handleWrongPick: (stealTeamId?: TeamId | null) => void;
-  markNoOne: () => void;
-  resetGame: () => void;
-  resumeGame: () => void;
+export interface UseGameStateOptions {
+  /** How many tiles score double. Two out of twenty-five by default. */
+  doubleCount?: number;
+  /** Injectable so tests get a fixed board instead of a random one. */
+  rng?: () => number;
 }
 
-export function useGameState(
-  pack: QuestionPack,
-  settings: GameSettings,
-): UseGameStateResult {
-  const [saved, setSaved] = useLocalStorage<PersistedState | null>(
-    'jeoparty_game_state',
-    null,
+const DEFAULT_TEAMS: PlayTeam[] = [
+  { name: 'Lag 1', score: 0 },
+  { name: 'Lag 2', score: 0 },
+];
+
+export const MIN_TEAMS = 2;
+export const MAX_TEAMS = 4;
+
+/**
+ * The rules of a round: who picks, which tiles are spent, what a tile is worth
+ * and who gets the points. State and arithmetic only — the UI decides how it
+ * looks, and Spotify lives outside entirely.
+ */
+export function useGameState(pack: QuestionPack, options: UseGameStateOptions = {}) {
+  const { doubleCount = 2, rng } = options;
+
+  const [teams, setTeams] = useState<PlayTeam[]>(() => DEFAULT_TEAMS.map((t) => ({ ...t })));
+  const [pickingIndex, setPickingIndex] = useState(0);
+  const [usedIds, setUsedIds] = useState<Set<string>>(() => new Set());
+  const [doubleIds, setDoubleIds] = useState<Set<string>>(() =>
+    pickDoubleIds(pack, doubleCount, rng),
+  );
+  const [activeTile, setActiveTile] = useState<TileRef | null>(null);
+
+  const questionAt = useCallback(
+    (tile: TileRef | null): Question | null =>
+      tile ? (pack.categories[tile.ci]?.questions[tile.qi] ?? null) : null,
+    [pack],
   );
 
-  const hasSavedGame =
-    saved !== null &&
-    saved.packId === pack.id &&
-    saved.packVersion === pack.version;
+  const activeQuestion = useMemo(() => questionAt(activeTile), [questionAt, activeTile]);
+  const activeIsDouble = activeQuestion ? doubleIds.has(activeQuestion.id) : false;
+  const activePoints = activeQuestion ? tileValue(activeQuestion, activeIsDouble) : 0;
+  const activeCategoryName = activeTile ? (pack.categories[activeTile.ci]?.name ?? '') : '';
 
-  const [scores, setScores] = useState<Record<TeamId, number>>(() =>
-    makeInitialScores(settings.teams),
+  const pickerName = teams[pickingIndex]?.name ?? '';
+  const isFinished = useMemo(() => isPackFinished(pack, usedIds), [pack, usedIds]);
+
+  const standings = useMemo(
+    () => teams.map((t, i) => ({ ...t, index: i })).sort((a, b) => b.score - a.score),
+    [teams],
   );
-  const [usedQuestionIds, setUsedIds] = useState<Set<string>>(() => new Set());
-  const [currentPickerIndex, setCurrentPickerIndex] = useState(0);
-  const [activeQuestion, setActiveQuestion] = useState<ActiveQuestion | null>(null);
-  const [gameLog, setGameLog] = useState<GameLogEntry[]>([]);
-
-  const isFinished = useMemo(
-    () => isPackFinished(pack, usedQuestionIds),
-    [pack, usedQuestionIds],
+  const topScore = standings[0]?.score ?? 0;
+  const champions = useMemo(
+    () => standings.filter((t) => t.score === topScore),
+    [standings, topScore],
   );
+  const isTie = champions.length > 1;
 
-  const progressPercent = useMemo(
-    () => computeProgress(pack, usedQuestionIds),
-    [pack, usedQuestionIds],
-  );
-
-  const packRef = useRef(pack);
-  const scoresRef = useRef(scores);
-  useLayoutEffect(() => {
-    packRef.current = pack;
-    scoresRef.current = scores;
-  });
-
-  const persist = useRef<(s: Record<TeamId, number>, ids: Set<string>, pickerIdx: number) => void>(
-    (s, ids, pickerIdx) => {
-      setSaved({
-        packId: packRef.current.id,
-        packVersion: packRef.current.version,
-        scores: s as Record<string, number>,
-        usedQuestionIds: Array.from(ids),
-        currentPickerIndex: pickerIdx,
-      });
+  /** Opens a tile and returns its question, so the caller can react to it. */
+  const openTile = useCallback(
+    (ci: number, qi: number): Question | null => {
+      if (activeTile) return null;
+      const q = pack.categories[ci]?.questions[qi];
+      if (!q || usedIds.has(q.id)) return null;
+      setActiveTile({ ci, qi });
+      return q;
     },
+    [activeTile, pack, usedIds],
   );
 
-  const openQuestion = useCallback((active: ActiveQuestion) => {
-    setActiveQuestion(active);
-  }, []);
+  const closeTile = useCallback(() => setActiveTile(null), []);
 
-  const closeQuestion = useCallback(() => {
-    setActiveQuestion(null);
-  }, []);
-
-  const advancePicker = useCallback(
-    (currentIdx: number) => {
-      const next = (currentIdx + 1) % settings.teams.length;
-      setCurrentPickerIndex(next);
-      return next;
+  /** Spends the tile and hands the pick to the next team. */
+  const settleAndAdvance = useCallback(
+    (questionId: string) => {
+      setUsedIds((prev) => new Set(prev).add(questionId));
+      setPickingIndex((prev) => (teams.length === 0 ? 0 : (prev + 1) % teams.length));
+      setActiveTile(null);
     },
-    [settings.teams.length],
+    [teams.length],
   );
 
-  const awardWinner = useCallback(
-    (teamId: TeamId) => {
-      if (!activeQuestion) return;
-      const { question, categoryName } = activeQuestion;
-
-      setScores((prev) => {
-        const next = { ...prev, [teamId]: (prev[teamId] ?? 0) + question.points };
-        setUsedIds((prevIds) => {
-          const nextIds = new Set(prevIds);
-          nextIds.add(question.id);
-          const nextPickerIdx = advancePicker(currentPickerIndex);
-          persist.current(next, nextIds, nextPickerIdx);
-          return nextIds;
-        });
-        return next;
-      });
-
-      setGameLog((prev) => [
-        ...prev,
-        {
-          timestamp: Date.now(),
-          questionId: question.id,
-          categoryName,
-          points: question.points,
-          outcome: 'correct',
-          teamId,
-        },
-      ]);
-      setActiveQuestion(null);
+  const award = useCallback(
+    (teamIndex: number) => {
+      const q = questionAt(activeTile);
+      if (!q) return;
+      const points = tileValue(q, doubleIds.has(q.id));
+      setTeams((prev) =>
+        prev.map((t, i) => (i === teamIndex ? { ...t, score: t.score + points } : t)),
+      );
+      settleAndAdvance(q.id);
     },
-    [activeQuestion, currentPickerIndex, advancePicker],
+    [questionAt, activeTile, doubleIds, settleAndAdvance],
   );
 
-  const handleWrongPick = useCallback(
-    (stealTeamId?: TeamId | null) => {
-      if (!activeQuestion) return;
-      const { question, categoryName } = activeQuestion;
-
-      setScores((prev) => {
-        let next = { ...prev };
-        const picker = settings.teams[currentPickerIndex]?.id as TeamId | undefined;
-        if (settings.negativeScoring && picker) {
-          next = { ...next, [picker]: (next[picker] ?? 0) - question.points };
-        }
-        if (stealTeamId) {
-          next = { ...next, [stealTeamId]: (next[stealTeamId] ?? 0) + question.points };
-        }
-        setUsedIds((prevIds) => {
-          const nextIds = new Set(prevIds);
-          nextIds.add(question.id);
-          const nextPickerIdx = advancePicker(currentPickerIndex);
-          persist.current(next, nextIds, nextPickerIdx);
-          return nextIds;
-        });
-        return next;
-      });
-
-      setGameLog((prev) => [
-        ...prev,
-        {
-          timestamp: Date.now(),
-          questionId: question.id,
-          categoryName,
-          points: question.points,
-          outcome: stealTeamId ? 'steal' : 'wrong',
-          teamId: settings.teams[currentPickerIndex]?.id as TeamId ?? null,
-          stealTeamId: stealTeamId ?? undefined,
-        },
-      ]);
-      setActiveQuestion(null);
-    },
-    [activeQuestion, settings, currentPickerIndex, advancePicker],
-  );
-
+  /** Nobody got it: the tile is spent, no score changes. */
   const markNoOne = useCallback(() => {
-    if (!activeQuestion) return;
-    const { question, categoryName } = activeQuestion;
+    const q = questionAt(activeTile);
+    if (!q) return;
+    settleAndAdvance(q.id);
+  }, [questionAt, activeTile, settleAndAdvance]);
 
-    setUsedIds((prevIds) => {
-      const nextIds = new Set(prevIds);
-      nextIds.add(question.id);
-      const nextPickerIdx = advancePicker(currentPickerIndex);
-      persist.current(scoresRef.current, nextIds, nextPickerIdx);
-      return nextIds;
-    });
-
-    setGameLog((prev) => [
-      ...prev,
-      {
-        timestamp: Date.now(),
-        questionId: question.id,
-        categoryName,
-        points: question.points,
-        outcome: 'no-one',
-        teamId: null,
-      },
-    ]);
-    setActiveQuestion(null);
-  }, [activeQuestion, currentPickerIndex, advancePicker]);
-
-  const resetGame = useCallback(() => {
-    const fresh = makeInitialScores(settings.teams);
-    setScores(fresh);
+  const reset = useCallback(() => {
+    setTeams((prev) => prev.map((t) => ({ ...t, score: 0 })));
     setUsedIds(new Set());
-    setCurrentPickerIndex(0);
-    setActiveQuestion(null);
-    setGameLog([]);
-    setSaved(null);
-  }, [settings.teams, setSaved]);
+    setPickingIndex(0);
+    setActiveTile(null);
+    setDoubleIds(pickDoubleIds(pack, doubleCount, rng));
+  }, [pack, doubleCount, rng]);
 
-  const resumeGame = useCallback(() => {
-    if (!hasSavedGame || !saved) return;
-    setScores(saved.scores as Record<TeamId, number>);
-    setUsedIds(new Set(saved.usedQuestionIds));
-    setCurrentPickerIndex(saved.currentPickerIndex);
-    setGameLog([]);
-  }, [hasSavedGame, saved]);
+  const addTeam = useCallback(() => {
+    setTeams((prev) =>
+      prev.length >= MAX_TEAMS ? prev : [...prev, { name: `Lag ${prev.length + 1}`, score: 0 }],
+    );
+  }, []);
+
+  const removeTeam = useCallback((index: number) => {
+    setTeams((prev) => {
+      if (prev.length <= MIN_TEAMS) return prev;
+      const next = prev.filter((_, i) => i !== index);
+      setPickingIndex((p) => (p >= next.length ? next.length - 1 : p));
+      return next;
+    });
+  }, []);
+
+  const renameTeam = useCallback((index: number, name: string) => {
+    setTeams((prev) => prev.map((t, i) => (i === index ? { ...t, name } : t)));
+  }, []);
 
   return {
-    scores,
-    usedQuestionIds,
-    currentPickerIndex,
+    teams,
+    pickingIndex,
+    pickerName,
+    usedIds,
+    doubleIds,
+    activeTile,
     activeQuestion,
-    gameLog,
+    activeIsDouble,
+    activePoints,
+    activeCategoryName,
     isFinished,
-    progressPercent,
-    hasSavedGame,
-    setCurrentPickerIndex,
-    openQuestion,
-    closeQuestion,
-    awardWinner,
-    handleWrongPick,
+    standings,
+    topScore,
+    champions,
+    isTie,
+    openTile,
+    closeTile,
+    award,
     markNoOne,
-    resetGame,
-    resumeGame,
+    reset,
+    addTeam,
+    removeTeam,
+    renameTeam,
+    setPickingIndex,
   };
 }

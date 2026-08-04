@@ -25,6 +25,34 @@ export function isPackFinished(pack: QuestionPack, usedIds: Set<string>): boolea
   );
 }
 
+export function allQuestionIds(pack: QuestionPack): string[] {
+  return pack.categories.flatMap((c) => c.questions.map((q) => q.id));
+}
+
+/**
+ * Picks the tiles that score double. Fisher–Yates rather than
+ * `sort(() => Math.random() - 0.5)`, which is not a uniform shuffle and leaves
+ * some tiles considerably likelier than others. `rng` is injectable so tests
+ * can pin the outcome.
+ */
+export function pickDoubleIds(
+  pack: QuestionPack,
+  count: number,
+  rng: () => number = Math.random,
+): Set<string> {
+  const ids = allQuestionIds(pack);
+  for (let i = ids.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [ids[i], ids[j]] = [ids[j]!, ids[i]!];
+  }
+  return new Set(ids.slice(0, Math.max(0, Math.min(count, ids.length))));
+}
+
+/** What a tile is worth once the double-jeopardy multiplier is applied. */
+export function tileValue(question: Question, isDouble: boolean): number {
+  return question.points * (isDouble ? 2 : 1);
+}
+
 export function getQuestionById(pack: QuestionPack, id: string): Question | undefined {
   for (const category of pack.categories) {
     const q = category.questions.find((q) => q.id === id);

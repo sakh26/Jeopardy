@@ -3,11 +3,16 @@ import type { SpotifySession } from '../types';
 import { randomString, generateCodeChallenge } from '../utils/spotify';
 
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string | undefined;
+
+// Spotify matches the redirect URI character for character against the one
+// registered in the dashboard, so it has to carry the base path too — on Pages
+// the app lives at /Jeoparty/, not at the domain root. Spotify also rejects
+// "localhost" while allowing the loopback IP, hence the swap.
 const REDIRECT_URI =
   (import.meta.env.VITE_SPOTIFY_REDIRECT_URI as string | undefined) ??
   `${window.location.protocol}//${
     window.location.hostname === 'localhost' ? '127.0.0.1' : window.location.hostname
-  }${window.location.port ? `:${window.location.port}` : ''}`;
+  }${window.location.port ? `:${window.location.port}` : ''}${window.location.pathname}`;
 const TOKEN_KEY = 'jeoparty_spotify_token';
 const VERIFIER_KEY = 'jeoparty_spotify_verifier';
 const SCOPES = ['user-modify-playback-state', 'user-read-playback-state'];

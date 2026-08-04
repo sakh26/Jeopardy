@@ -1,6 +1,61 @@
 import { describe, it, expect } from 'vitest';
-import { mapPoints, computeProgress, isPackFinished } from '../../../src/utils/gameLogic';
+import {
+  mapPoints,
+  computeProgress,
+  isPackFinished,
+  allQuestionIds,
+  pickDoubleIds,
+  tileValue,
+} from '../../../src/utils/gameLogic';
 import { MOCK_PACK } from '../../fixtures';
+
+describe('pickDoubleIds', () => {
+  const ids = allQuestionIds(MOCK_PACK);
+
+  it('picks exactly the requested number', () => {
+    expect(pickDoubleIds(MOCK_PACK, 2, () => 0).size).toBe(2);
+    expect(pickDoubleIds(MOCK_PACK, 5, () => 0).size).toBe(5);
+  });
+
+  it('only picks tiles that exist in the pack', () => {
+    for (const id of pickDoubleIds(MOCK_PACK, 3, () => 0.5)) {
+      expect(ids).toContain(id);
+    }
+  });
+
+  it('never picks the same tile twice', () => {
+    const picked = pickDoubleIds(MOCK_PACK, 4, () => 0.7);
+    expect(picked.size).toBe(4);
+  });
+
+  it('is deterministic for a given rng', () => {
+    const a = [...pickDoubleIds(MOCK_PACK, 3, () => 0.25)];
+    const b = [...pickDoubleIds(MOCK_PACK, 3, () => 0.25)];
+    expect(a).toEqual(b);
+  });
+
+  it('cannot ask for more tiles than the board holds', () => {
+    expect(pickDoubleIds(MOCK_PACK, 999, () => 0).size).toBe(ids.length);
+  });
+
+  it('handles a request for none, and an empty pack', () => {
+    expect(pickDoubleIds(MOCK_PACK, 0, () => 0).size).toBe(0);
+    const empty = { ...MOCK_PACK, categories: [] };
+    expect(pickDoubleIds(empty, 2, () => 0).size).toBe(0);
+  });
+});
+
+describe('tileValue', () => {
+  const question = MOCK_PACK.categories[0]!.questions[0]!;
+
+  it('is the face value on an ordinary tile', () => {
+    expect(tileValue(question, false)).toBe(question.points);
+  });
+
+  it('doubles on a double-jeopardy tile', () => {
+    expect(tileValue(question, true)).toBe(question.points * 2);
+  });
+});
 
 describe('mapPoints', () => {
   const points: [number, number, number, number, number] = [100, 200, 300, 400, 500];

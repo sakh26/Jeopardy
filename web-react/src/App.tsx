@@ -2,10 +2,11 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { CSSProperties } from 'react';
 import './index.css';
 import { AVAILABLE_PACKS } from './data/packLoader';
+import { useGameState } from './hooks/useGameState';
 import { useSpotify } from './hooks/useSpotify';
 import { useToast } from './hooks/useToast';
 import { Toast } from './components/shared/Toast';
-import type { QuestionPack, Question } from './types';
+import type { QuestionPack } from './types';
 
 // ── Themes ──────────────────────────────────────────────────────────────────
 
@@ -32,24 +33,7 @@ const THEMES = {
 
 type ThemeKey = keyof typeof THEMES;
 
-// ── Types ────────────────────────────────────────────────────────────────────
-
-interface JTeam {
-  name: string;
-  score: number;
-}
-
-interface ActiveModal {
-  ci: number;
-  qi: number;
-}
-
 // ── Helpers ──────────────────────────────────────────────────────────────────
-
-function pickDoubles(pack: QuestionPack, n: number): Set<string> {
-  const ids = pack.categories.flatMap((c) => c.questions.map((q) => q.id));
-  return new Set([...ids].sort(() => Math.random() - 0.5).slice(0, Math.min(n, ids.length)));
-}
 
 function defaultPack(): QuestionPack {
   return JSON.parse(JSON.stringify(AVAILABLE_PACKS[0] ?? {
@@ -105,14 +89,6 @@ export default function App() {
   const [screen, setScreen] = useState<'board' | 'builder'>('board');
   const [themeKey, setThemeKey] = useState<ThemeKey>('ink');
   const [pack, setPack] = useState<QuestionPack>(defaultPack);
-  const [teams, setTeams] = useState<JTeam[]>([
-    { name: 'Lag 1', score: 0 },
-    { name: 'Lag 2', score: 0 },
-  ]);
-  const [picking, setPicking] = useState(0);
-  const [used, setUsed] = useState<Set<string>>(new Set());
-  const [doubleIds, setDoubleIds] = useState<Set<string>>(() => pickDoubles(defaultPack(), 2));
-  const [active, setActive] = useState<ActiveModal | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [hintRevealed, setHintRevealed] = useState(false);
   const [winnerDismissed, setWinnerDismissed] = useState(false);
@@ -121,6 +97,23 @@ export default function App() {
   const { toast, showToast } = useToast();
   const spotify = useSpotify(showToast);
   const theme = THEMES[themeKey];
+
+  // Scores, turn order, spent tiles and double-jeopardy tiles all live in the
+  // hook, where they are covered by unit tests. What stays here is presentation:
+  // which panel is showing, and whether the hint and answer are flipped up.
+  const game = useGameState(pack);
+  const {
+    teams,
+    pickingIndex: picking,
+    usedIds: used,
+    activeTile: active,
+    activeQuestion: activeQ,
+    activeIsDouble,
+    activePoints,
+    activeCategoryName: activeCatName,
+    pickerName,
+    closeTile,
+  } = game;
 
   // Root CSS variables
   const rootStyle = useMemo(() => ({
@@ -134,51 +127,38 @@ export default function App() {
 
   // ── Game actions ──────────────────────────────────────────────────────────
 
-  function resetGame() {
-    setTeams((t) => t.map((tm) => ({ ...tm, score: 0 })));
-    setUsed(new Set());
-    setPicking(0);
-    setActive(null);
+  function clearReveals() {
     setRevealed(false);
     setHintRevealed(false);
+  }
+
+  function resetGame() {
+    game.reset();
+    clearReveals();
     setWinnerDismissed(false);
-    setDoubleIds(pickDoubles(pack, 2));
   }
 
   function openTile(ci: number, qi: number) {
-    if (active) return;
-    const q = pack.categories[ci]?.questions[qi];
-    if (!q || used.has(q.id)) return;
-    setActive({ ci, qi });
-    setRevealed(false);
-    setHintRevealed(false);
+    const q = game.openTile(ci, qi);
+    if (!q) return;
+    clearReveals();
     if (spotify.isConnected) void spotify.playForQuestion(q);
   }
 
-  function closeModal() {
-    setActive(null);
+  const closeModal = useCallback(() => {
+    closeTile();
     setRevealed(false);
     setHintRevealed(false);
-  }
+  }, [closeTile]);
 
   function scoreTile(teamIdx: number) {
-    if (!active) return;
-    const q = pack.categories[active.ci]?.questions[active.qi];
-    if (!q) return;
-    const pts = q.points * (doubleIds.has(q.id) ? 2 : 1);
-    setTeams((prev) => prev.map((t, i) => (i === teamIdx ? { ...t, score: t.score + pts } : t)));
-    setUsed((prev) => new Set([...prev, q.id]));
-    setPicking((prev) => (prev + 1) % teams.length);
-    closeModal();
+    game.award(teamIdx);
+    clearReveals();
   }
 
   function resolveNoOne() {
-    if (!active) return;
-    const q = pack.categories[active.ci]?.questions[active.qi];
-    if (!q) return;
-    setUsed((prev) => new Set([...prev, q.id]));
-    setPicking((prev) => (prev + 1) % teams.length);
-    closeModal();
+    game.markNoOne();
+    clearReveals();
   }
 
   // Escape key closes the question modal
@@ -189,7 +169,7 @@ export default function App() {
     }
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [active]);
+  }, [active, closeModal]);
 
   // ── Builder actions ───────────────────────────────────────────────────────
 
@@ -215,23 +195,12 @@ export default function App() {
 
   // ── Derived data ──────────────────────────────────────────────────────────
 
-  const activeQ: Question | null = active
-    ? (pack.categories[active.ci]?.questions[active.qi] ?? null)
-    : null;
-  const activeIsDouble = activeQ ? doubleIds.has(activeQ.id) : false;
-  const activePoints = activeQ ? activeQ.points * (activeIsDouble ? 2 : 1) : 0;
-  const activeCatName = active ? (pack.categories[active.ci]?.name ?? '') : '';
-  const pickerName = teams[picking]?.name ?? '';
+  const showWinner = screen === 'board' && game.isFinished && !winnerDismissed;
 
-  const totalTiles = pack.categories.reduce((n, c) => n + c.questions.length, 0);
-  const showWinner = screen === 'board' && totalTiles > 0 && used.size >= totalTiles && !winnerDismissed;
-
-  const sorted = [...teams]
-    .map((t, i) => ({ ...t, i }))
-    .sort((a, b) => b.score - a.score);
-  const topScore = sorted[0]?.score ?? 0;
-  const champs = sorted.filter((t) => t.score === topScore);
-  const tie = champs.length > 1;
+  const sorted = game.standings;
+  const topScore = game.topScore;
+  const champs = game.champions;
+  const tie = game.isTie;
   const winnerTitle = tie ? 'Uavgjort!' : `${sorted[0]?.name ?? ''} vant!`;
   const winnerSubtitle = tie
     ? `${champs.map((c) => c.name).join(' og ')} deler seieren med ${topScore} poeng`
@@ -285,7 +254,7 @@ export default function App() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifySelf: 'end' }}>
               {teams.length < 4 && (
                 <button
-                  onClick={() => setTeams((prev) => [...prev, { name: `Lag ${prev.length + 1}`, score: 0 }])}
+                  onClick={game.addTeam}
                   style={{ padding: '9px 14px', borderRadius: 10, background: 'transparent', color: 'var(--soft)', border: '1px dashed var(--line)', cursor: 'pointer', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' }}
                 >
                   + Lag
@@ -303,7 +272,7 @@ export default function App() {
               ) : (
                 <button
                   onClick={spotify.connect}
-                  title="Koble verten til Spotify én gang — deretter spilles hver sang automatisk"
+                  title="Koble verten til Spotify én gang — deretter spilles hver sang automatisk. Krever Spotify Premium og en konto som er gitt tilgang til appen."
                   style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 14px', borderRadius: 10, background: '#1db954', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#06241a' }}
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
@@ -337,7 +306,7 @@ export default function App() {
               return (
                 <div
                   key={i}
-                  onClick={() => setPicking(i)}
+                  onClick={() => game.setPickingIndex(i)}
                   style={{
                     flex: 1, minWidth: 170, padding: '15px 18px', borderRadius: 15,
                     background: 'var(--panel)',
@@ -350,11 +319,7 @@ export default function App() {
                     <input
                       type="text"
                       value={tm.name}
-                      onChange={(e) =>
-                        setTeams((prev) =>
-                          prev.map((t, idx) => (idx === i ? { ...t, name: e.target.value } : t))
-                        )
-                      }
+                      onChange={(e) => game.renameTeam(i, e.target.value)}
                       onClick={(e) => e.stopPropagation()}
                       title="Trykk for å endre navn"
                       style={{
@@ -370,9 +335,7 @@ export default function App() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          const newLength = teams.length - 1;
-                          setTeams((prev) => prev.filter((_, idx) => idx !== i));
-                          setPicking((prev) => (prev >= newLength ? newLength - 1 : prev));
+                          game.removeTeam(i);
                         }}
                         title="Fjern lag"
                         style={{
